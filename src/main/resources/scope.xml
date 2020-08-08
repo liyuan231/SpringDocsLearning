@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!--    <bean id="loginAction" class="com.liyuan.scope.LoginAction" scope="request"/>-->
+
+    <bean id="userPreference" class="com.liyuan.scope.UserPreference" scope="session">
+        <aop:scoped-proxy/>
+    </bean>
+
+    <bean id="simpleUserService" class="com.liyuan.scope.SimpleUserService">
+        <property name="userPreference" ref="userPreference"/>
+    </bean>
+
+    <bean id="aSingletonBean" class="com.liyuan.scope.ASingletonBean">
+        <property name="aPrototypeBean" ref="aPrototypeBean"/>
+    </bean>
+    <bean id="aPrototypeBean" class="com.liyuan.scope.APrototypeBean" scope="prototype">
+        <aop:scoped-proxy/>
+    </bean>
+
+
+    <bean id="defaultUserPreferences" class="com.liyuan.scope.DefaultUserPreferencesImpl" scope="session">
+<!--        <aop:scoped-proxy proxy-target-class="false"/>-->
+        <aop:scoped-proxy/>
+    </bean>
+    <bean id="manager" class="com.liyuan.scope.UserManager">
+        <property name="defaultUserPreferences" ref="defaultUserPreferences"/>
+    </bean>
+</beans>

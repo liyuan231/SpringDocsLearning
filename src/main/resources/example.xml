@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <bean id="anotherExampleBean" class="com.liyuan.controller.AnotherExampleBean"/>
+    <bean class="com.liyuan.controller.YetAnotherBean" id="yetAnotherBean"/>
+<!--    <bean class="com.liyuan.controller."></bean>-->
+
+<!--    &lt;!&ndash; a stateful bean deployed as a prototype (non-singleton) &ndash;&gt;-->
+<!--    <bean id="myCommand" class="com.liyuan.model.Command" scope="prototype">-->
+<!--        &lt;!&ndash; inject dependencies here as required &ndash;&gt;-->
+<!--    </bean>-->
+
+    <!-- commandProcessor uses statefulCommandHelper -->
+    <bean id="commandManager1" class="com.liyuan.singleAndPrototype.AbstractCommandManager">
+        <lookup-method name="createCommand" bean="command"/>
+    </bean>
+
+    <bean id="replacementComputeValue" class="com.liyuan.singleAndPrototype.ReplacementComputeValue"/>
+    <bean id="myValueCalculator" class="com.liyuan.singleAndPrototype.MyValueCalculator">
+        <replaced-method  name="computeValue" replacer="replacementComputeValue">
+            <arg-type>String</arg-type>
+        </replaced-method>
+    </bean>
+</beans>

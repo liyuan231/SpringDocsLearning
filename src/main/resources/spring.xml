@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <import resource="services.xml"/>
+    <import resource="example.xml"/>
+    <import resource="scope.xml"/>
+    <bean id="helloController" name="helloController2,helloController3,helloController4"
+          class="com.liyuan.controller.HelloController">
+        <!-- collaborators and configuration for this bean go here -->
+        <property name="helloService" ref="helloServiceImpl"/>
+    </bean>
+    <alias name="helloController4" alias="helloController5"/>
+    <context:component-scan base-package="com.liyuan"/>
+
+    <!--    使用静态工厂模式-->
+    <!--    <bean  id="clientService" class="com.liyuan.service.ClientService" factory-method="createInstance"/>-->
+
+    <!--    使用工厂模式-->
+    <bean id="serviceLocator" class="com.liyuan.utils.DefaultServiceLocator"/>
+    <bean id="clientService" factory-bean="serviceLocator" factory-method="createClientServiceInstance"/>
+    <bean id="accountService" factory-bean="serviceLocator" factory-method="createAccountServiceInstance"/>
+
+    <bean id="thingOne" class="com.liyuan.controller.ThingOne">
+        <constructor-arg ref="thingThree"/>
+        <constructor-arg ref="thingTwo"/>
+    </bean>
+    <!--    &lt;!&ndash; more bean definitions go here &ndash;&gt;-->
+    <!--方法三：构造器注入+setter注入-->
+    <!--    <bean id="exampleBean" class="com.liyuan.controller.ExampleBean">-->
+    <!--        <constructor-arg  name="years" value="19"/>-->
+    <!--        <constructor-arg name="ultimateAnswer" value="Liyuan"/>-->
+    <!--        <property name="anotherBean" ref="anotherExampleBean"/>-->
+    <!--        <property name="beanTwo" ref="yetAnotherBean"/>-->
+    <!--        <property name="integerProperty" value="2020"/>-->
+    <!--    </bean>-->
+    <!--    方法二：构造器注入-->
+    <!--    <bean id="exampleBean" class="com.liyuan.controller.ExampleBean">-->
+    <!--        <constructor-arg name="beanOne" ref="anotherExampleBean"/>-->
+    <!--        <constructor-arg name="beanTwo" ref="yetAnotherBean"/>-->
+    <!--        <constructor-arg name="integerProperty" value="2021"/>-->
+    <!--        <constructor-arg name="ultimateAnswer" value="LIYUAN"/>-->
+    <!--        <constructor-arg name="years" value="20"/>-->
+    <!--    </bean>-->
+    <!--    方法三，静态工厂注入-->
+
+    <bean class="com.liyuan.controller.SimpleMovieLister" name="simpleMovieLister">
+        <property name="movieFinder" ref="movieFinder"/>
+    </bean>
+    <bean class="com.liyuan.circle.A" name="a">
+        <property name="b" ref="b"/>
+    </bean>
+    <bean class="com.liyuan.circle.B" name="b">
+        <constructor-arg name="a" ref="a"/>
+    </bean>
+    <bean id="dataSource" class="com.mchange.v2.c3p0.DriverManagerDataSource">
+        <property name="driverClass" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="user" value="root"/>
+        <property name="password" value="Liyuan201227$"/>
+        <property name="jdbcUrl" value="jdbc:mysql://175.24.4.196:3306/yiqixing?serverTimezone=UTC"/>
+    </bean>
+
+    <bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--        <property name="dataSource" ref="dataSource"/>-->
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <bean id="userDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+        <property name="sqlSessionFactory" ref="sqlSessionFactoryBean"/>
+        <property name="mapperInterface" value="com.liyuan.dao.UserDao"/>
+    </bean>
+    <bean id="theTargetBean" class="com.liyuan.controller.TheTargetBean"/>
+    <bean id="theClientBean" class="com.liyuan.controller.TheClientBean">
+        <property name="theTargetBean" ref="theTargetBean">
+            <!--            <idref bean="theTargetBean"/>/-->
+        </property>
+    </bean>
+
+    <!--    <bean id="accountService" class="com.liyuan.service.impl.AccountServiceImpl"></bean>-->
+    <!--    <bean id="accountService">-->
+    <!--        -->
+    <!--    </bean>-->
+    <!--    <bean id="outer" class="com.liyuan.model.Outer">-->
+    <!--        <property name="liyuan">-->
+    <!--            <bean class="com.liyuan.model.Liyuan">-->
+    <!--                <property name="name" value="LIYUAN"/>-->
+    <!--                <property name="age" value="19"/>-->
+    <!--            </bean>-->
+    <!--        </property>-->
+    <!--    </bean>-->
+
+    <bean id="complexObject" class="com.liyuan.model.ComplexObject">
+        <property name="adminEmails">
+            <props>
+                <prop key="1">one</prop>
+                <prop key="2">two</prop>
+                <prop key="3">three</prop>
+            </props>
+        </property>
+        <property name="someList">
+            <list>
+                <value>1</value>
+                <value>2</value>
+                <ref bean="dataSource"/>
+            </list>
+        </property>
+        <property name="someMap">
+            <map>
+                <entry key="1" value="11"/>
+                <entry key="2" value="22"/>
+                <entry key="3" value="33"/>
+            </map>
+        </property>
+        <property name="someSet">
+            <set>
+                <value>set1</value>
+                <ref bean="dataSource"/>
+            </set>
+        </property>
+    </bean>
+    <bean id="child" parent="complexObject">
+        <property name="adminEmails">
+            <props merge="true">
+                <prop key="4">four</prop>
+                <prop key="5">five</prop>
+                <prop key="6">six</prop>
+            </props>
+        </property>
+        <property name="someList">
+            <list merge="true">
+                <value>3</value>
+                <value>4</value>
+            </list>
+        </property>
+    </bean>
+    <bean id="something" class="com.liyuan.model.SomeClass">
+        <property name="accounts">
+            <map>
+                <entry key="one" value="1D"/>
+                <entry key="two" value="2D"/>
+                <entry key="three" value="3D"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean factory-method="createInstance" class="com.liyuan.controller.ExampleBean" id="exampleBean">
+        <constructor-arg name="anotherExampleBean" ref="anotherExampleBean"/>
+        <constructor-arg name="yetAnotherBean" ref="yetAnotherBean"/>
+        <constructor-arg name="i" value="1919"/>
+    </bean>
+    <bean id="exampleBean2" class="com.liyuan.controller.ExampleBean">
+        <property name="anotherBean">
+            <null/>
+        </property>
+        <property name="beanTwo">
+            <null/>
+        </property>
+        <property name="integerProperty" value="-1"/>
+    </bean>
+    <bean id="exampleBean3" class="com.liyuan.controller.ExampleBean"
+          p:anotherBean-ref="anotherExampleBean"
+          p:beanTwo-ref="yetAnotherBean"
+          p:integerProperty="-1"/>
+    <bean id="exampleBean4" class="com.liyuan.controller.ExampleBean"
+          c:beanOne-ref="anotherExampleBean"/>
+    <bean autowire-candidate="false" id="exampleBean5" class="com.liyuan.controller.ExampleBean">
+        <property name="integerProperty" value="-1"/>
+        <property name="beanTwo" ref="yetAnotherBean"/>
+        <property name="anotherBean" ref="anotherExampleBean"/>
+    </bean>
+    <bean scope="prototype" id="command" class="com.liyuan.model.Command"/>
+    <bean id="commandManager" class="com.liyuan.model.CommandManager"/>
+
+</beans>
